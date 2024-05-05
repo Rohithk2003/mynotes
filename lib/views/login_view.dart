@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:MyNotes/constants/routes.dart';
+import 'package:MyNotes/utilities/showCustomError.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -36,33 +40,11 @@ class _LoginViewState extends State<LoginView> {
       final user = FirebaseAuth.instance.currentUser;
       if (user?.emailVerified ?? false) {
         Navigator.of(context)
-            .pushNamedAndRemoveUntil('/emailverify/', (route) => false);
+            .pushNamedAndRemoveUntil(emailVerifyRouter, (route) => false);
       }
       Navigator.of(context)
-          .pushNamedAndRemoveUntil('/mainpage/', (route) => false);
+          .pushNamedAndRemoveUntil(notesRouter, (route) => false);
     }
-  }
-
-  void showCustomDialog(String contentText, String titleText, String buttonText,
-      Function handleFunction) {
-    setState(() {
-      loginBackgroundCheckStarted = false;
-    });
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(titleText),
-            content: Text(contentText),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    handleFunction();
-                  },
-                  child: Text(buttonText))
-            ],
-          );
-        });
   }
 
   Future<void> _login() async {
@@ -71,20 +53,56 @@ class _LoginViewState extends State<LoginView> {
     });
     final email = _email.text;
     final password = _password.text;
-    try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-      if (mounted) {
-        showCustomDialog(
-            "Logged in successfully", "Success", "Okay", handleLoginSuccess);
-      }
-    } on FirebaseException catch (e) {
-      if (e.code == "invalid-email") {
-        showCustomDialog("Invalid email format.Please try again", "Error",
-            "Close", () => {Navigator.pop(context)});
-      } else {
-        showCustomDialog("Invalid email or password.", "Error", "Close",
-            () => {Navigator.pop(context)});
+    if (email == "" || password == "") {
+      showCustomDialog(
+          context, "Please fill the details", "Invalid email", "Okay", () {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(emailVerifyRouter, (route) => false);
+      });
+    } else {
+      try {
+        final user = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
+        if (mounted) {
+          setState(() {
+            loginBackgroundCheckStarted = false;
+          });
+          if (!(user.user?.emailVerified ?? false)) {
+            showCustomDialog(
+                context, "Please verify your email", "Invalid email", "Okay",
+                () {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil(emailVerifyRouter, (route) => false);
+            });
+          } else {
+            showCustomDialog(context, "Logged in successfully", "Success",
+                "Okay", handleLoginSuccess);
+          }
+        }
+      } on FirebaseException catch (e) {
+        if (mounted) {
+          setState(() {
+            loginBackgroundCheckStarted = false;
+          });
+          if (e.code == "invalid-email") {
+            showCustomDialog(context, "Invalid email format.Please try again",
+                "Error", "Close", () => {Navigator.pop(context)});
+          } else if (e.code == "invalid-credential") {
+            showCustomDialog(context, "Invalid email or password.", "Error",
+                "Close", () => {Navigator.pop(context)});
+          } else {
+            showCustomDialog(context, e.code, "Error occured", "Close",
+                () => {Navigator.pop(context)});
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            loginBackgroundCheckStarted = false;
+          });
+          showCustomDialog(context, "Something happened.Please try again later",
+              "Error occured", "Close", () => {Navigator.pop(context)});
+        }
       }
     }
   }
@@ -101,10 +119,10 @@ class _LoginViewState extends State<LoginView> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Login"),
-          backgroundColor: Colors.green,
-          foregroundColor: Colors.white,
+          backgroundColor: secondaryColor,
+          foregroundColor: textColor,
         ),
-        backgroundColor: Colors.black87,
+        backgroundColor: bgColor,
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -112,7 +130,7 @@ class _LoginViewState extends State<LoginView> {
               'My Notes',
               style: GoogleFonts.inter(
                 textStyle: const TextStyle(
-                    color: Colors.white,
+                    color: textColor,
                     letterSpacing: .5,
                     fontSize: 30,
                     fontWeight: FontWeight.bold),
@@ -128,18 +146,17 @@ class _LoginViewState extends State<LoginView> {
                   SizedBox(
                     width: 500,
                     child: TextField(
-                      style:
-                          const TextStyle(fontSize: 16.0, color: Colors.white),
+                      style: const TextStyle(fontSize: 16.0, color: textColor),
                       controller: _email,
                       autocorrect: false,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                           hintText: "Enter your email",
-                          hintStyle: const TextStyle(color: Colors.white),
+                          hintStyle: const TextStyle(color: textColor),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                             borderSide: const BorderSide(
-                              color: Colors.green,
+                              color: secondaryColor,
                               width: 2.0,
                             ),
                           )),
@@ -155,7 +172,7 @@ class _LoginViewState extends State<LoginView> {
                       obscureText: true,
                       style: GoogleFonts.inter(
                         textStyle: const TextStyle(
-                            color: Colors.white, letterSpacing: .5),
+                            color: textColor, letterSpacing: .5),
                       ),
                       enableSuggestions: false,
                       autocorrect: false,
@@ -163,13 +180,13 @@ class _LoginViewState extends State<LoginView> {
                           hintText: "Enter your password",
                           hintStyle: GoogleFonts.inter(
                             textStyle: const TextStyle(
-                                color: Colors.white, letterSpacing: .5),
+                                color: textColor, letterSpacing: .5),
                           ),
-                          fillColor: Colors.white,
+                          fillColor: textColor,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                             borderSide: const BorderSide(
-                              color: Colors.green,
+                              color: secondaryColor,
                               width: 2.0,
                             ),
                           )),
@@ -185,13 +202,13 @@ class _LoginViewState extends State<LoginView> {
                           child: TextButton(
                             onPressed: _login,
                             style: TextButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                foregroundColor: Colors.white),
+                                backgroundColor: secondaryColor,
+                                foregroundColor: textColor),
                             child: Text(
                               "Login",
                               style: GoogleFonts.inter(
                                 textStyle: const TextStyle(
-                                    color: Colors.white,
+                                    color: textColor,
                                     letterSpacing: .5,
                                     fontSize: 16),
                               ),
@@ -202,25 +219,25 @@ class _LoginViewState extends State<LoginView> {
                   TextButton(
                       onPressed: () async {
                         Navigator.of(context).pushNamedAndRemoveUntil(
-                            '/register/', (route) => false);
+                            registerRouter, (route) => false);
                       },
                       child: Text(
                         "Not registered yet ? Register here!",
                         style: GoogleFonts.inter(
                           textStyle: const TextStyle(
-                              color: Colors.green, letterSpacing: .5),
+                              color: textColor, letterSpacing: .5),
                         ),
                       )),
                   TextButton(
                       onPressed: () async {
                         Navigator.of(context).pushNamedAndRemoveUntil(
-                            '/emailverify/', (route) => false);
+                            emailVerifyRouter, (route) => false);
                       },
                       child: Text(
                         "Verify email !",
                         style: GoogleFonts.inter(
                           textStyle: const TextStyle(
-                              color: Colors.green, letterSpacing: .5),
+                              color: textColor, letterSpacing: .5),
                         ),
                       ))
                 ],

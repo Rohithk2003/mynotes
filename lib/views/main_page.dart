@@ -1,6 +1,9 @@
+import 'dart:developer';
+
+import 'package:MyNotes/constants/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_fonts/google_fonts.dart';
+// import 'package:google_fonts/google_fonts.dart';
 // import 'dart:developer' as devtools show log;
 
 class MainPageView extends StatefulWidget {
@@ -19,19 +22,20 @@ class MyWidget extends StatelessWidget {
   }
 }
 
-enum MenuAction { logout }
+enum MenuAction { logout, delete }
 
 class _MainPageViewState extends State<MainPageView> {
   String user =
       FirebaseAuth.instance.currentUser?.email.toString().split("@")[0] ?? "";
 
-  Future<void> showLogOutDialog(BuildContext context) {
+  Future<void> showLogOutDialog(BuildContext context, String contentText,
+      String titleText, Function handleFunction) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Sign out'),
-            content: const Text("Are you sure you want to sign out"),
+            title: Text(titleText),
+            content: Text(contentText),
             actions: [
               TextButton(
                   onPressed: () async {
@@ -41,9 +45,9 @@ class _MainPageViewState extends State<MainPageView> {
               TextButton(
                   onPressed: () async {
                     Navigator.pop(context);
-                    logout();
+                    handleFunction();
                   },
-                  child: const Text("Sign out")),
+                  child: Text(titleText)),
             ],
           );
         });
@@ -60,93 +64,160 @@ class _MainPageViewState extends State<MainPageView> {
               actions: [
                 TextButton(
                     onPressed: () async {
-                      Navigator.of(context)
-                          .pushNamedAndRemoveUntil('/login/', (route) => false);
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          loginRouter, (route) => false);
                     },
-                    child: const Text("Okay"))
+                    child: const Text("Close"))
               ],
             );
           });
     }
   }
 
+  void deleteAccount() async {
+    await FirebaseAuth.instance.currentUser?.delete();
+    if (mounted) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content:
+                  const Text("Your account has been successfully deleted."),
+              actions: [
+                TextButton(
+                    onPressed: () async {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          registerRouter, (route) => false);
+                    },
+                    child: const Text("Close"))
+              ],
+            );
+          });
+    }
+  }
+
+  final items = 10;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(user),
-          backgroundColor: const Color.fromRGBO(28, 27, 21, 1),
-          foregroundColor: Colors.white,
-          actions: [
-            PopupMenuButton<MenuAction>(
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(20.0),
-                  ),
-                ),
-                padding: const EdgeInsets.all(0),
-                offset: const Offset(0, 56),
-                onSelected: (value) async {
-                  switch (value) {
-                    case MenuAction.logout:
-                      await showLogOutDialog(context);
-                  }
-                },
-                itemBuilder: (context) => [
-                      PopupMenuItem<MenuAction>(
-                        padding: const EdgeInsets.all(0),
-                        value: MenuAction.logout,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: const Color.fromRGBO(41, 41, 27, 1),
-                              width: 1,
-                            ),
-                            color: const Color.fromRGBO(41, 41, 27, 1),
-                          ),
-                          width: 300,
-                          child: const Padding(
-                            padding: EdgeInsets.only(left: 16.0),
-                            child: ListTile(
-                                style: ListTileStyle.list,
-                                leading: Icon(Icons.logout),
-                                title: Text(
-                                  "Logout",
-                                  style: TextStyle(
-                                    backgroundColor:
-                                        Color.fromRGBO(41, 41, 27, 1),
-                                    color: Colors.white,
-                                  ),
-                                )),
-                          ),
-                        ),
-                      )
-                    ]),
-          ],
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        title: ListTile(
+          style: ListTileStyle.list,
+          leading: const Icon(Icons.account_circle),
+          title: Text(
+            user,
+            style: const TextStyle(
+              color: textColor,
+            ),
+          ),
         ),
-        backgroundColor: Colors.black87,
-        body: Column(
-          children: [
-            const SizedBox(
-              height: 30,
-            ),
-            Center(
-              child: Text(
-                'My Notes',
-                style: GoogleFonts.inter(
-                  textStyle: const TextStyle(
-                      color: Colors.white,
-                      letterSpacing: .5,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 40,
-            ),
-          ],
-        ));
+        backgroundColor: const Color.fromRGBO(28, 27, 21, 1),
+        foregroundColor: textColor,
+        actions: [
+          PopupMenuButton<MenuAction>(
+              padding: const EdgeInsets.all(0),
+              offset: const Offset(0, 56),
+              onSelected: (value) async {
+                log(value.toString());
+                switch (value) {
+                  case MenuAction.logout:
+                    await showLogOutDialog(
+                        context, "Are you sure ?", "Sign Out", logout);
+                    break;
+                  case MenuAction.delete:
+                    await showLogOutDialog(
+                        context,
+                        "Are you sure that yo u want to delete your account? This action is irreversible.",
+                        "Delete Account",
+                        deleteAccount);
+                    break;
+                }
+              },
+              itemBuilder: (context) => [
+                    PopupMenuItem<MenuAction>(
+                      padding: const EdgeInsets.all(0),
+                      value: MenuAction.logout,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          color: Color.fromRGBO(41, 41, 27, 1),
+                        ),
+                        width: 300,
+                        child: const Padding(
+                          padding: EdgeInsets.only(left: 16.0),
+                          child: ListTile(
+                              style: ListTileStyle.list,
+                              leading: Icon(Icons.logout),
+                              title: Text(
+                                "Logout",
+                                style: TextStyle(
+                                  backgroundColor:
+                                      Color.fromRGBO(41, 41, 27, 1),
+                                  color: textColor,
+                                ),
+                              )),
+                        ),
+                      ),
+                    ),
+                    PopupMenuItem<MenuAction>(
+                      padding: const EdgeInsets.all(0),
+                      value: MenuAction.delete,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          color: Color.fromRGBO(41, 41, 27, 1),
+                        ),
+                        width: 300,
+                        child: const Padding(
+                          padding: EdgeInsets.only(left: 16.0),
+                          child: ListTile(
+                              style: ListTileStyle.list,
+                              leading: Icon(Icons.delete),
+                              title: Text(
+                                "Delete account",
+                                style: TextStyle(
+                                  backgroundColor:
+                                      Color.fromRGBO(41, 41, 27, 1),
+                                  color: textColor,
+                                ),
+                              )),
+                        ),
+                      ),
+                    )
+                  ]),
+        ],
+      ),
+      backgroundColor: bgColor,
+      body: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: 100),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: List.generate(
+                items, (index) => ItemWidget(text: 'Item $index')),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ItemWidget extends StatelessWidget {
+  const ItemWidget({
+    super.key,
+    required this.text,
+  });
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: SizedBox(
+        height: 100,
+        child: Center(child: Text(text)),
+      ),
+    );
   }
 }

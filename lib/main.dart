@@ -1,10 +1,11 @@
+import 'package:MyNotes/constants/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:mynotes/configs/firebase_options.dart';
-import 'package:mynotes/views/email_verification.dart';
-import 'package:mynotes/views/main_page.dart';
-import 'package:mynotes/views/register_view.dart';
+import 'package:MyNotes/configs/firebase_options.dart';
+import 'package:MyNotes/views/email_verification.dart';
+import 'package:MyNotes/views/main_page.dart';
+import 'package:MyNotes/views/register_view.dart';
 import 'views/login_view.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -13,13 +14,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
     title: 'My Notes',
-    theme: ThemeData(useMaterial3: true, primarySwatch: Colors.green),
+    theme: ThemeData(useMaterial3: true),
     home: const HomePage(),
     routes: {
-      '/login/': (context) => const LoginView(),
-      '/register/': (context) => const RegisterView(),
-      '/emailverify/': (context) => const EmailVerification(),
-      '/mainpage/': (context) => const MainPageView()
+      loginRouter: (context) => const LoginView(),
+      registerRouter: (context) => const RegisterView(),
+      emailVerifyRouter: (context) => const EmailVerification(),
+      notesRouter: (context) => const MainPageView()
     },
   ));
 }

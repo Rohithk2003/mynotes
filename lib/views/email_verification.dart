@@ -1,3 +1,4 @@
+import 'package:MyNotes/constants/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,7 +24,7 @@ class _EmailVerificationState extends State<EmailVerification> {
     await FirebaseAuth.instance.signOut();
     if (mounted) {
       Navigator.of(context)
-          .pushNamedAndRemoveUntil('/login/', (route) => false);
+          .pushNamedAndRemoveUntil(loginRouter, (route) => false);
     }
   }
 
@@ -33,18 +34,31 @@ class _EmailVerificationState extends State<EmailVerification> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Verify"),
-        backgroundColor: Colors.green,
+        backgroundColor: secondaryColor,
       ),
-      backgroundColor: Colors.black87,
+      backgroundColor: bgColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Please verify your email address",
+              "We have sent you an email verification. Please open it to verify your account. After Verifying please login in.",
               style: GoogleFonts.inter(
                 textStyle: const TextStyle(
-                    color: Colors.white,
+                    color: textColor,
+                    letterSpacing: .5,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
+            Text(
+              "If you haven't recieved a verification email yet, press the button below",
+              style: GoogleFonts.inter(
+                textStyle: const TextStyle(
+                    color: textColor,
                     letterSpacing: .5,
                     fontSize: 20,
                     fontWeight: FontWeight.bold),
@@ -58,41 +72,19 @@ class _EmailVerificationState extends State<EmailVerification> {
               style: clickedVerifyEmail
                   ? null
                   : TextButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
+                      backgroundColor: secondaryColor,
+                      foregroundColor: textColor,
                     ),
-              child: clickedVerifyEmail
-                  ? TextButton(
-                      onPressed: goToLogin,
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
-                      ),
-                      child: const Text("Done?"),
-                    )
-                  : const Text(
-                      "Send email verification",
-                      style: TextStyle(),
-                    ),
+              child: const Text("Send email verification again."),
             ),
             TextButton(
-                onPressed: () async {
-                  Navigator.of(context)
-                      .pushNamedAndRemoveUntil('/register/', (route) => false);
-                },
-                child: const Text(
-                  "Not registered yet ? Register here!",
-                  style: TextStyle(color: Colors.green),
-                )),
-            TextButton(
-                onPressed: () async {
-                  Navigator.of(context)
-                      .pushNamedAndRemoveUntil('/login/', (route) => false);
-                },
-                child: const Text(
-                  "Want to login?",
-                  style: TextStyle(color: Colors.green),
-                ))
+              onPressed: goToLogin,
+              style: TextButton.styleFrom(
+                backgroundColor: secondaryColor,
+                foregroundColor: textColor,
+              ),
+              child: const Text("Login"),
+            ),
           ],
         ),
       ),
