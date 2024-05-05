@@ -22,6 +22,8 @@ class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
   String errorText = "";
+  bool loginBackgroundCheckStarted = false;
+
   @override
   void initState() {
     super.initState();
@@ -37,42 +39,52 @@ class _LoginViewState extends State<LoginView> {
             .pushNamedAndRemoveUntil('/emailverify/', (route) => false);
       }
       Navigator.of(context)
-          .pushNamedAndRemoveUntil('/main_page/', (route) => false);
+          .pushNamedAndRemoveUntil('/mainpage/', (route) => false);
     }
   }
 
+  void showCustomDialog(String contentText, String titleText, String buttonText,
+      Function handleFunction) {
+    setState(() {
+      loginBackgroundCheckStarted = false;
+    });
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(titleText),
+            content: Text(contentText),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    handleFunction();
+                  },
+                  child: Text(buttonText))
+            ],
+          );
+        });
+  }
+
   Future<void> _login() async {
+    setState(() {
+      loginBackgroundCheckStarted = true;
+    });
     final email = _email.text;
     final password = _password.text;
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      setState(() {
-        errorText = "You are successfully logged in";
-      });
       if (mounted) {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                content: const Text("Successfully Logged In"),
-                actions: [
-                  TextButton(
-                      onPressed: handleLoginSuccess, child: const Text("Okay"))
-                ],
-              );
-            });
+        showCustomDialog(
+            "Logged in successfully", "Success", "Okay", handleLoginSuccess);
       }
     } on FirebaseException catch (e) {
       if (e.code == "invalid-email") {
-        setState(() {
-          errorText = "Invalid email.";
-        });
+        showCustomDialog("Invalid email format.Please try again", "Error",
+            "Close", () => {Navigator.pop(context)});
       } else {
-        setState(() {
-          errorText =
-              "Invalid username or password.If you dont have an account please create one.";
-        });
+        showCustomDialog("Invalid email or password.", "Error", "Close",
+            () => {Navigator.pop(context)});
       }
     }
   }
@@ -166,24 +178,26 @@ class _LoginViewState extends State<LoginView> {
                   const SizedBox(
                     height: 30,
                   ),
-                  SizedBox(
-                    width: 100,
-                    child: TextButton(
-                      onPressed: _login,
-                      style: TextButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white),
-                      child: Text(
-                        "Login",
-                        style: GoogleFonts.inter(
-                          textStyle: const TextStyle(
-                              color: Colors.white,
-                              letterSpacing: .5,
-                              fontSize: 16),
+                  loginBackgroundCheckStarted
+                      ? const CircularProgressIndicator()
+                      : SizedBox(
+                          width: 100,
+                          child: TextButton(
+                            onPressed: _login,
+                            style: TextButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                foregroundColor: Colors.white),
+                            child: Text(
+                              "Login",
+                              style: GoogleFonts.inter(
+                                textStyle: const TextStyle(
+                                    color: Colors.white,
+                                    letterSpacing: .5,
+                                    fontSize: 16),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
                   Text(errorText),
                   TextButton(
                       onPressed: () async {
