@@ -62,7 +62,9 @@ class _RegisterViewState extends State<RegisterView> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Register Account"),
+          backgroundColor: Colors.green,
         ),
+        backgroundColor: Colors.black87,
         body: FutureBuilder(
             future: Firebase.initializeApp(
               options: DefaultFirebaseOptions.currentPlatform,
@@ -83,13 +85,14 @@ class _RegisterViewState extends State<RegisterView> {
                               width: 200,
                               child: TextField(
                                 style: const TextStyle(
-                                  fontSize: 16.0,
-                                ),
+                                    fontSize: 16.0, color: Colors.white),
                                 controller: _email,
                                 autocorrect: false,
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: InputDecoration(
                                     hintText: "Enter your email",
+                                    hintStyle:
+                                        const TextStyle(color: Colors.white),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
@@ -108,9 +111,12 @@ class _RegisterViewState extends State<RegisterView> {
                                 controller: _password,
                                 obscureText: true,
                                 enableSuggestions: false,
+                                style: const TextStyle(color: Colors.white),
                                 autocorrect: false,
                                 decoration: InputDecoration(
                                     hintText: "Enter your password",
+                                    hintStyle:
+                                        const TextStyle(color: Colors.white),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
@@ -126,7 +132,8 @@ class _RegisterViewState extends State<RegisterView> {
                             TextButton(
                               onPressed: _registerUser,
                               style: TextButton.styleFrom(
-                                  backgroundColor: Colors.amber),
+                                  backgroundColor: Colors.green,
+                                  foregroundColor: Colors.white),
                               child: const Text("Register"),
                             ),
                             Text(errorText),
@@ -136,7 +143,9 @@ class _RegisterViewState extends State<RegisterView> {
                                       '/login/', (route) => false);
                                 },
                                 child: const Text(
-                                    "Already registered? Login here!"))
+                                  "Already registered? Login here!",
+                                  style: TextStyle(color: Colors.green),
+                                ))
                           ],
                         ),
                       ),

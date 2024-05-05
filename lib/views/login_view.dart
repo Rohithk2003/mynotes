@@ -74,7 +74,9 @@ class _LoginViewState extends State<LoginView> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Login"),
+          backgroundColor: Colors.green,
         ),
+        backgroundColor: Colors.black87,
         body: FutureBuilder(
             future: Firebase.initializeApp(
               options: DefaultFirebaseOptions.currentPlatform,
@@ -95,13 +97,14 @@ class _LoginViewState extends State<LoginView> {
                               width: 200,
                               child: TextField(
                                 style: const TextStyle(
-                                  fontSize: 16.0,
-                                ),
+                                    fontSize: 16.0, color: Colors.white),
                                 controller: _email,
                                 autocorrect: false,
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: InputDecoration(
                                     hintText: "Enter your email",
+                                    hintStyle:
+                                        const TextStyle(color: Colors.white),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
@@ -119,10 +122,14 @@ class _LoginViewState extends State<LoginView> {
                               child: TextField(
                                 controller: _password,
                                 obscureText: true,
+                                style: const TextStyle(color: Colors.white),
                                 enableSuggestions: false,
                                 autocorrect: false,
                                 decoration: InputDecoration(
                                     hintText: "Enter your password",
+                                    hintStyle:
+                                        const TextStyle(color: Colors.white),
+                                    fillColor: Colors.white,
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
@@ -138,7 +145,8 @@ class _LoginViewState extends State<LoginView> {
                             TextButton(
                               onPressed: _login,
                               style: TextButton.styleFrom(
-                                  backgroundColor: Colors.amber),
+                                  backgroundColor: Colors.green,
+                                  foregroundColor: Colors.white),
                               child: const Text("Login"),
                             ),
                             Text(errorText),
@@ -148,13 +156,18 @@ class _LoginViewState extends State<LoginView> {
                                       '/register/', (route) => false);
                                 },
                                 child: const Text(
-                                    "Not registered yet ? Register here!")),
+                                  "Not registered yet ? Register here!",
+                                  style: TextStyle(color: Colors.green),
+                                )),
                             TextButton(
                                 onPressed: () async {
                                   Navigator.of(context).pushNamedAndRemoveUntil(
                                       '/emailverify/', (route) => false);
                                 },
-                                child: const Text("Verify email !"))
+                                child: const Text(
+                                  "Verify email !",
+                                  style: TextStyle(color: Colors.green),
+                                ))
                           ],
                         ),
                       ),

@@ -12,7 +12,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
     title: 'My Notes',
-    theme: ThemeData(useMaterial3: true, primarySwatch: Colors.amber),
+    theme: ThemeData(useMaterial3: true, primarySwatch: Colors.green),
     home: const HomePage(),
     routes: {
       '/login/': (context) => const LoginView(),
@@ -29,8 +29,9 @@ class HomePage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: const Center(child: Text("My Notes")),
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.green,
         ),
+        backgroundColor: Colors.black87,
         body: FutureBuilder(
             future: Firebase.initializeApp(
                 options: DefaultFirebaseOptions.currentPlatform),
@@ -45,17 +46,14 @@ class HomePage extends StatelessWidget {
                   if (verificationMessage) {
                     return Center(
                         child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const SizedBox(
-                          width: 400,
-                          height: 200,
-                        ),
                         SizedBox(
                           width: 100,
                           height: 40,
                           child: TextButton(
                             style: TextButton.styleFrom(
-                                backgroundColor: Colors.black54,
+                                backgroundColor: Colors.green,
                                 foregroundColor: Colors.white),
                             onPressed: () async {
                               Navigator.of(context).pushNamedAndRemoveUntil(
@@ -77,7 +75,7 @@ class HomePage extends StatelessWidget {
                           height: 40,
                           child: TextButton(
                             style: TextButton.styleFrom(
-                                backgroundColor: Colors.black54,
+                                backgroundColor: Colors.green,
                                 foregroundColor: Colors.white),
                             onPressed: () async {
                               Navigator.of(context).pushNamedAndRemoveUntil(
