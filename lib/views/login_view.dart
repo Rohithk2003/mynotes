@@ -29,6 +29,18 @@ class _LoginViewState extends State<LoginView> {
     _password = TextEditingController();
   }
 
+  void handleLoginSuccess() {
+    if (mounted) {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user?.emailVerified ?? false) {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/emailverify/', (route) => false);
+      }
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('/main_page/', (route) => false);
+    }
+  }
+
   Future<void> _login() async {
     final email = _email.text;
     final password = _password.text;
@@ -38,6 +50,19 @@ class _LoginViewState extends State<LoginView> {
       setState(() {
         errorText = "You are successfully logged in";
       });
+      if (mounted) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                content: const Text("Successfully Logged In"),
+                actions: [
+                  TextButton(
+                      onPressed: handleLoginSuccess, child: const Text("Okay"))
+                ],
+              );
+            });
+      }
     } on FirebaseException catch (e) {
       if (e.code == "invalid-email") {
         setState(() {

@@ -21,6 +21,24 @@ class _RegisterViewState extends State<RegisterView> {
     try {
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+      if (mounted) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                content:
+                    const Text("Your account has been successfully created"),
+                actions: [
+                  TextButton(
+                      onPressed: () async {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            '/login/', (route) => false);
+                      },
+                      child: const Text("Okay"))
+                ],
+              );
+            });
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
         if (mounted) {

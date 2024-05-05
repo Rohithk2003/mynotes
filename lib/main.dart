@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/configs/firebase_options.dart';
 import 'package:mynotes/views/email_verification.dart';
+import 'package:mynotes/views/main_page.dart';
 import 'package:mynotes/views/register_view.dart';
 import 'views/login_view.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -17,7 +18,8 @@ void main() async {
     routes: {
       '/login/': (context) => const LoginView(),
       '/register/': (context) => const RegisterView(),
-      '/emailverify/': (context) => const EmailVerification()
+      '/emailverify/': (context) => const EmailVerification(),
+      '/mainpage/': (context) => const MainPageView()
     },
   ));
 }
@@ -37,7 +39,7 @@ class HomePage extends StatelessWidget {
                 return const LoginView();
               } else {
                 if (user.emailVerified) {
-                  return const RegisterView();
+                  return const MainPageView();
                 } else {
                   return const EmailVerification();
                 }
