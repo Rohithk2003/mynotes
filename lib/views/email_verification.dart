@@ -62,7 +62,19 @@ class _EmailVerificationState extends State<EmailVerification> {
                       "Send email verification",
                       style: TextStyle(),
                     ),
-            )
+            ),
+            TextButton(
+                onPressed: () async {
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil('/register/', (route) => false);
+                },
+                child: const Text("Not registered yet ? Register here!")),
+            TextButton(
+                onPressed: () async {
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil('/login/', (route) => false);
+                },
+                child: const Text("Want to login?"))
           ],
         ),
       ),

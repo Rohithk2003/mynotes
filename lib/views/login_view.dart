@@ -143,9 +143,18 @@ class _LoginViewState extends State<LoginView> {
                             ),
                             Text(errorText),
                             TextButton(
-                                onPressed: () async {},
+                                onPressed: () async {
+                                  Navigator.of(context).pushNamedAndRemoveUntil(
+                                      '/register/', (route) => false);
+                                },
                                 child: const Text(
-                                    "Not registered yet ? Register here!"))
+                                    "Not registered yet ? Register here!")),
+                            TextButton(
+                                onPressed: () async {
+                                  Navigator.of(context).pushNamedAndRemoveUntil(
+                                      '/emailverify/', (route) => false);
+                                },
+                                child: const Text("Verify email !"))
                           ],
                         ),
                       ),

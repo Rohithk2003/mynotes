@@ -14,6 +14,11 @@ void main() async {
     title: 'My Notes',
     theme: ThemeData(useMaterial3: true, primarySwatch: Colors.amber),
     home: const HomePage(),
+    routes: {
+      '/login/': (context) => const LoginView(),
+      '/register/': (context) => const RegisterView(),
+      '/emailverify/': (context) => const EmailVerification()
+    },
   ));
 }
 
@@ -53,11 +58,8 @@ class HomePage extends StatelessWidget {
                                 backgroundColor: Colors.black54,
                                 foregroundColor: Colors.white),
                             onPressed: () async {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const RegisterView()),
-                              );
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                  '/register/', (route) => false);
                             },
                             child: const Text("Register"),
                           ),
@@ -78,11 +80,8 @@ class HomePage extends StatelessWidget {
                                 backgroundColor: Colors.black54,
                                 foregroundColor: Colors.white),
                             onPressed: () async {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const LoginView()),
-                              );
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                  '/login/', (route) => false);
                             },
                             child: const Text("Login"),
                           ),

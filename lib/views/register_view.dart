@@ -62,8 +62,6 @@ class _RegisterViewState extends State<RegisterView> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Register Account"),
-          backgroundColor: Colors.blueAccent,
-          leadingWidth: 100,
         ),
         body: FutureBuilder(
             future: Firebase.initializeApp(
@@ -132,6 +130,13 @@ class _RegisterViewState extends State<RegisterView> {
                               child: const Text("Register"),
                             ),
                             Text(errorText),
+                            TextButton(
+                                onPressed: () async {
+                                  Navigator.of(context).pushNamedAndRemoveUntil(
+                                      '/login/', (route) => false);
+                                },
+                                child: const Text(
+                                    "Already registered? Login here!"))
                           ],
                         ),
                       ),
