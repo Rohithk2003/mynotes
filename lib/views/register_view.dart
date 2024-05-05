@@ -10,18 +10,38 @@ class RegisterView extends StatefulWidget {
   State<RegisterView> createState() => _RegisterViewState();
 }
 
-class MyWidget extends StatelessWidget {
-  const MyWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
 class _RegisterViewState extends State<RegisterView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
+  String errorText = "";
+
+  void _registerUser() async {
+    final email = _email.text;
+    final password = _password.text;
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        if (mounted) {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  content: const Text("Email Already Exists"),
+                  actions: [
+                    TextButton(
+                        onPressed: () async {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("Close"))
+                  ],
+                );
+              });
+        }
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -55,32 +75,65 @@ class _RegisterViewState extends State<RegisterView> {
                   return const Center(child: CircularProgressIndicator());
                 default:
                   return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      TextField(
-                        controller: _email,
-                        decoration: const InputDecoration(hintText: "Email"),
-                      ),
-                      TextField(
-                        controller: _password,
-                        obscureText: true,
-                        enableSuggestions: false,
-                        autocorrect: false,
-                        decoration: const InputDecoration(hintText: "Password"),
-                      ),
                       Center(
-                        child: TextButton(
-                            onPressed: () async {
-                              final email = _email.text;
-                              final password = _password.text;
-                              try {
-                                FirebaseAuth.instance
-                                    .createUserWithEmailAndPassword(
-                                        email: email, password: password);
-                              } on FirebaseAuthException {
-                                print("Error");
-                              }
-                            },
-                            child: const Text("Login")),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 200,
+                              child: TextField(
+                                style: const TextStyle(
+                                  fontSize: 16.0,
+                                ),
+                                controller: _email,
+                                autocorrect: false,
+                                keyboardType: TextInputType.emailAddress,
+                                decoration: InputDecoration(
+                                    hintText: "Enter your email",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.blue,
+                                        width: 2.0,
+                                      ),
+                                    )),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 40,
+                            ),
+                            SizedBox(
+                              width: 200,
+                              child: TextField(
+                                controller: _password,
+                                obscureText: true,
+                                enableSuggestions: false,
+                                autocorrect: false,
+                                decoration: InputDecoration(
+                                    hintText: "Enter your password",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.blue,
+                                        width: 2.0,
+                                      ),
+                                    )),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            TextButton(
+                              onPressed: _registerUser,
+                              style: TextButton.styleFrom(
+                                  backgroundColor: Colors.amber),
+                              child: const Text("Register"),
+                            ),
+                            Text(errorText),
+                          ],
+                        ),
                       ),
                     ],
                   );

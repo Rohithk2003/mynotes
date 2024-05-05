@@ -142,6 +142,10 @@ class _LoginViewState extends State<LoginView> {
                               child: const Text("Login"),
                             ),
                             Text(errorText),
+                            TextButton(
+                                onPressed: () async {},
+                                child: const Text(
+                                    "Not registered yet ? Register here!"))
                           ],
                         ),
                       ),
