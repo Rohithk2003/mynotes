@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class EmailVerification extends StatefulWidget {
   const EmailVerification({super.key});
@@ -39,8 +40,15 @@ class _EmailVerificationState extends State<EmailVerification> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               "Please verify your email address",
+              style: GoogleFonts.inter(
+                textStyle: const TextStyle(
+                    color: Colors.white,
+                    letterSpacing: .5,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
             ),
             const SizedBox(
               height: 30,
