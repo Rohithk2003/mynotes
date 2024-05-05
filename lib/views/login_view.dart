@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/widgets.dart';
 import '../configs/firebase_options.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -84,27 +85,66 @@ class _LoginViewState extends State<LoginView> {
                   return const Center(child: CircularProgressIndicator());
                 default:
                   return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      TextField(
-                        controller: _email,
-                        autocorrect: false,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration:
-                            const InputDecoration(hintText: "Enter your email"),
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 200,
+                              child: TextField(
+                                style: const TextStyle(
+                                  fontSize: 16.0,
+                                ),
+                                controller: _email,
+                                autocorrect: false,
+                                keyboardType: TextInputType.emailAddress,
+                                decoration: InputDecoration(
+                                    hintText: "Enter your email",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.blue,
+                                        width: 2.0,
+                                      ),
+                                    )),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 40,
+                            ),
+                            SizedBox(
+                              width: 200,
+                              child: TextField(
+                                controller: _password,
+                                obscureText: true,
+                                enableSuggestions: false,
+                                autocorrect: false,
+                                decoration: InputDecoration(
+                                    hintText: "Enter your password",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.blue,
+                                        width: 2.0,
+                                      ),
+                                    )),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            TextButton(
+                              onPressed: _login,
+                              style: TextButton.styleFrom(
+                                  backgroundColor: Colors.amber),
+                              child: const Text("Login"),
+                            ),
+                            Text(errorText),
+                          ],
+                        ),
                       ),
-                      TextField(
-                        controller: _password,
-                        obscureText: true,
-                        enableSuggestions: false,
-                        autocorrect: false,
-                        decoration: const InputDecoration(
-                            hintText: "Enter your password"),
-                      ),
-                      TextButton(
-                        onPressed: _login,
-                        child: const Text("Login"),
-                      ),
-                      Text(errorText),
                     ],
                   );
               }
