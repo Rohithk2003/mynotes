@@ -1,11 +1,9 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'configs/firebase_options.dart';
 import 'views/LoginView.dart';
-import 'views/RegisterView.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  await dotenv.load();
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
     title: 'My Notes',

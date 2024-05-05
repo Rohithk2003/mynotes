@@ -40,11 +40,17 @@ class _LoginViewState extends State<LoginView> {
       setState(() {
         errorText = "You are successfully logged in";
       });
-    } on FirebaseException {
-      setState(() {
-        errorText =
-            "Invalid username or password.If you dont have an account please create one.";
-      });
+    } on FirebaseException catch (e) {
+      if (e.code == "invalid-email") {
+        setState(() {
+          errorText = "Invalid email.";
+        });
+      } else {
+        setState(() {
+          errorText =
+              "Invalid username or password.If you dont have an account please create one.";
+        });
+      }
       Fluttertoast.showToast(
         msg: "Authentication failed. Please try again.",
         toastLength: Toast.LENGTH_SHORT,
@@ -83,18 +89,20 @@ class _LoginViewState extends State<LoginView> {
                         controller: _email,
                         autocorrect: false,
                         keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(hintText: "Email"),
+                        decoration:
+                            const InputDecoration(hintText: "Enter your email"),
                       ),
                       TextField(
                         controller: _password,
                         obscureText: true,
                         enableSuggestions: false,
                         autocorrect: false,
-                        decoration: const InputDecoration(hintText: "Password"),
+                        decoration: const InputDecoration(
+                            hintText: "Enter your password"),
                       ),
                       TextButton(
                         onPressed: _login,
-                        child: Text("Login"),
+                        child: const Text("Login"),
                       ),
                       Text(errorText),
                     ],
