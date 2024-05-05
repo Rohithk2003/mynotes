@@ -41,7 +41,9 @@ class _RegisterViewState extends State<RegisterView> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Register"),
+          title: const Text("Register Account"),
+          backgroundColor: Colors.blueAccent,
+          leadingWidth: 100,
         ),
         body: FutureBuilder(
             future: Firebase.initializeApp(
