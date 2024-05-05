@@ -26,93 +26,25 @@ class HomePage extends StatelessWidget {
   const HomePage({super.key});
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Center(child: Text("My Notes")),
-          backgroundColor: Colors.green,
-        ),
-        backgroundColor: Colors.black87,
-        body: FutureBuilder(
-            future: Firebase.initializeApp(
-                options: DefaultFirebaseOptions.currentPlatform),
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.done:
-                  final user = FirebaseAuth.instance.currentUser;
-
-                  bool verificationMessage =
-                      user?.emailVerified == true ? true : false;
-                  if (user == null) verificationMessage = true;
-                  if (verificationMessage) {
-                    return Center(
-                        child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 100,
-                          height: 40,
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                foregroundColor: Colors.white),
-                            onPressed: () async {
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                  '/register/', (route) => false);
-                            },
-                            child: const Text("Register"),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 400,
-                          height: 30,
-                        ),
-                        const SizedBox(
-                          width: 400,
-                          height: 20,
-                        ),
-                        SizedBox(
-                          width: 100,
-                          height: 40,
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                foregroundColor: Colors.white),
-                            onPressed: () async {
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                  '/login/', (route) => false);
-                            },
-                            child: const Text("Login"),
-                          ),
-                        )
-                      ],
-                    ));
-                  } else {
-                    return Center(
-                      child: SizedBox(
-                        width: 100,
-                        height: 300,
-                        child: Center(
-                          child: TextButton(
-                            onPressed: () async {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const EmailVerification()));
-                            },
-                            style: TextButton.styleFrom(
-                              backgroundColor: Colors.blueGrey,
-                              foregroundColor: Colors.white,
-                            ),
-                            child: const Text("Verify Email"),
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                default:
-                  return const Text("ERROR");
+    return FutureBuilder(
+        future: Firebase.initializeApp(
+            options: DefaultFirebaseOptions.currentPlatform),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              final user = FirebaseAuth.instance.currentUser;
+              if (user == null) {
+                return const LoginView();
+              } else {
+                if (user.emailVerified) {
+                  return const RegisterView();
+                } else {
+                  return const EmailVerification();
+                }
               }
-            }));
+            default:
+              return const Text("ERROR");
+          }
+        });
   }
 }

@@ -1,9 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/widgets.dart';
 import '../configs/firebase_options.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -36,7 +35,7 @@ class _LoginViewState extends State<LoginView> {
     final email = _email.text;
     final password = _password.text;
     try {
-      final userCredential = await FirebaseAuth.instance
+      await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
       setState(() {
         errorText = "You are successfully logged in";
@@ -52,13 +51,6 @@ class _LoginViewState extends State<LoginView> {
               "Invalid username or password.If you dont have an account please create one.";
         });
       }
-      Fluttertoast.showToast(
-        msg: "Authentication failed. Please try again.",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
     }
   }
 
@@ -75,6 +67,7 @@ class _LoginViewState extends State<LoginView> {
         appBar: AppBar(
           title: const Text("Login"),
           backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
         ),
         backgroundColor: Colors.black87,
         body: FutureBuilder(
@@ -89,12 +82,25 @@ class _LoginViewState extends State<LoginView> {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Text(
+                        'My Notes',
+                        style: GoogleFonts.inter(
+                          textStyle: const TextStyle(
+                              color: Colors.white,
+                              letterSpacing: .5,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 40,
+                      ),
                       Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(
-                              width: 200,
+                              width: 500,
                               child: TextField(
                                 style: const TextStyle(
                                     fontSize: 16.0, color: Colors.white),
@@ -108,7 +114,7 @@ class _LoginViewState extends State<LoginView> {
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
-                                        color: Colors.blue,
+                                        color: Colors.green,
                                         width: 2.0,
                                       ),
                                     )),
@@ -118,22 +124,28 @@ class _LoginViewState extends State<LoginView> {
                               height: 40,
                             ),
                             SizedBox(
-                              width: 200,
+                              width: 500,
                               child: TextField(
                                 controller: _password,
                                 obscureText: true,
-                                style: const TextStyle(color: Colors.white),
+                                style: GoogleFonts.inter(
+                                  textStyle: const TextStyle(
+                                      color: Colors.white, letterSpacing: .5),
+                                ),
                                 enableSuggestions: false,
                                 autocorrect: false,
                                 decoration: InputDecoration(
                                     hintText: "Enter your password",
-                                    hintStyle:
-                                        const TextStyle(color: Colors.white),
+                                    hintStyle: GoogleFonts.inter(
+                                      textStyle: const TextStyle(
+                                          color: Colors.white,
+                                          letterSpacing: .5),
+                                    ),
                                     fillColor: Colors.white,
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
-                                        color: Colors.blue,
+                                        color: Colors.green,
                                         width: 2.0,
                                       ),
                                     )),
@@ -142,12 +154,23 @@ class _LoginViewState extends State<LoginView> {
                             const SizedBox(
                               height: 30,
                             ),
-                            TextButton(
-                              onPressed: _login,
-                              style: TextButton.styleFrom(
-                                  backgroundColor: Colors.green,
-                                  foregroundColor: Colors.white),
-                              child: const Text("Login"),
+                            SizedBox(
+                              width: 100,
+                              child: TextButton(
+                                onPressed: _login,
+                                style: TextButton.styleFrom(
+                                    backgroundColor: Colors.green,
+                                    foregroundColor: Colors.white),
+                                child: Text(
+                                  "Login",
+                                  style: GoogleFonts.inter(
+                                    textStyle: const TextStyle(
+                                        color: Colors.white,
+                                        letterSpacing: .5,
+                                        fontSize: 16),
+                                  ),
+                                ),
+                              ),
                             ),
                             Text(errorText),
                             TextButton(
@@ -155,18 +178,24 @@ class _LoginViewState extends State<LoginView> {
                                   Navigator.of(context).pushNamedAndRemoveUntil(
                                       '/register/', (route) => false);
                                 },
-                                child: const Text(
+                                child: Text(
                                   "Not registered yet ? Register here!",
-                                  style: TextStyle(color: Colors.green),
+                                  style: GoogleFonts.inter(
+                                    textStyle: const TextStyle(
+                                        color: Colors.green, letterSpacing: .5),
+                                  ),
                                 )),
                             TextButton(
                                 onPressed: () async {
                                   Navigator.of(context).pushNamedAndRemoveUntil(
                                       '/emailverify/', (route) => false);
                                 },
-                                child: const Text(
+                                child: Text(
                                   "Verify email !",
-                                  style: TextStyle(color: Colors.green),
+                                  style: GoogleFonts.inter(
+                                    textStyle: const TextStyle(
+                                        color: Colors.green, letterSpacing: .5),
+                                  ),
                                 ))
                           ],
                         ),

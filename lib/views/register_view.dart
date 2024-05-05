@@ -19,7 +19,7 @@ class _RegisterViewState extends State<RegisterView> {
     final email = _email.text;
     final password = _password.text;
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
+      await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
@@ -82,7 +82,7 @@ class _RegisterViewState extends State<RegisterView> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(
-                              width: 200,
+                              width: 500,
                               child: TextField(
                                 style: const TextStyle(
                                     fontSize: 16.0, color: Colors.white),
@@ -106,7 +106,7 @@ class _RegisterViewState extends State<RegisterView> {
                               height: 40,
                             ),
                             SizedBox(
-                              width: 200,
+                              width: 500,
                               child: TextField(
                                 controller: _password,
                                 obscureText: true,

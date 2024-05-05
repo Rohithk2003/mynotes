@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mynotes/views/login_view.dart';
 
 class EmailVerification extends StatefulWidget {
   const EmailVerification({super.key});
@@ -19,10 +18,12 @@ class _EmailVerificationState extends State<EmailVerification> {
   }
 
   void goToLogin() async {
-    final user = FirebaseAuth.instance.currentUser;
+    FirebaseAuth.instance.currentUser;
     await FirebaseAuth.instance.signOut();
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => LoginView()));
+    if (mounted) {
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('/login/', (route) => false);
+    }
   }
 
   bool clickedVerifyEmail = false;
@@ -31,13 +32,16 @@ class _EmailVerificationState extends State<EmailVerification> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Verify"),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.green,
       ),
+      backgroundColor: Colors.black87,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text("Please verify your email address"),
+            const Text(
+              "Please verify your email address",
+            ),
             const SizedBox(
               height: 30,
             ),
@@ -46,17 +50,17 @@ class _EmailVerificationState extends State<EmailVerification> {
               style: clickedVerifyEmail
                   ? null
                   : TextButton.styleFrom(
-                      backgroundColor: Colors.blueGrey,
+                      backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
                     ),
               child: clickedVerifyEmail
                   ? TextButton(
                       onPressed: goToLogin,
-                      child: Text("Done?"),
                       style: TextButton.styleFrom(
-                        backgroundColor: Colors.blueGrey,
+                        backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
                       ),
+                      child: const Text("Done?"),
                     )
                   : const Text(
                       "Send email verification",
@@ -68,13 +72,19 @@ class _EmailVerificationState extends State<EmailVerification> {
                   Navigator.of(context)
                       .pushNamedAndRemoveUntil('/register/', (route) => false);
                 },
-                child: const Text("Not registered yet ? Register here!")),
+                child: const Text(
+                  "Not registered yet ? Register here!",
+                  style: TextStyle(color: Colors.green),
+                )),
             TextButton(
                 onPressed: () async {
                   Navigator.of(context)
                       .pushNamedAndRemoveUntil('/login/', (route) => false);
                 },
-                child: const Text("Want to login?"))
+                child: const Text(
+                  "Want to login?",
+                  style: TextStyle(color: Colors.green),
+                ))
           ],
         ),
       ),
