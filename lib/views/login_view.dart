@@ -68,12 +68,14 @@ class _LoginViewState extends State<LoginView> {
             loginBackgroundCheckStarted = false;
           });
           if (!(user.user?.emailVerified ?? false)) {
-            showCustomDialog(
-                context, "Please verify your email", "Invalid email", "Okay",
-                () {
+            showCustomDialog(context, "Please verify your email",
+                "Invalid email", "Okay", () {});
+            final user = FirebaseAuth.instance.currentUser;
+            await user?.sendEmailVerification();
+            if (mounted) {
               Navigator.of(context)
                   .pushNamedAndRemoveUntil(emailVerifyRouter, (route) => false);
-            });
+            }
           } else {
             showCustomDialog(context, "Logged in successfully", "Success",
                 "Okay", handleLoginSuccess);

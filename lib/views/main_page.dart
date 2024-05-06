@@ -117,12 +117,6 @@ class _MainPageViewState extends State<MainPageView> {
         foregroundColor: textColor,
         actions: [
           PopupMenuButton<MenuAction>(
-              shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(10.0), // Adjust the radius as needed
-                side: const BorderSide(
-                    color: Colors.grey), // Add border color if needed
-              ),
               padding: const EdgeInsets.all(0),
               offset: const Offset(0, 56),
               onSelected: (value) async {
