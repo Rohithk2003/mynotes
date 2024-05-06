@@ -1,9 +1,8 @@
-import 'dart:developer';
-
 import 'package:MyNotes/constants/routes.dart';
+import 'package:MyNotes/services/auth/auth_exceptions.dart';
+import 'package:MyNotes/services/auth/auth_service.dart';
 import 'package:MyNotes/utilities/showCustomError.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginView extends StatefulWidget {
@@ -37,8 +36,8 @@ class _LoginViewState extends State<LoginView> {
 
   void handleLoginSuccess() {
     if (mounted) {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user?.emailVerified ?? false) {
+      final user = AuthService.firebase().currentUser;
+      if (user?.isEmailVerified ?? false) {
         Navigator.of(context)
             .pushNamedAndRemoveUntil(emailVerifyRouter, (route) => false);
       }
@@ -61,49 +60,45 @@ class _LoginViewState extends State<LoginView> {
       });
     } else {
       try {
-        final user = await FirebaseAuth.instance
-            .signInWithEmailAndPassword(email: email, password: password);
+        await AuthService.firebase().login(
+          email: email,
+          password: password,
+        );
         if (mounted) {
+          final user = AuthService.firebase().currentUser;
           setState(() {
             loginBackgroundCheckStarted = false;
           });
-          if (!(user.user?.emailVerified ?? false)) {
-            showCustomDialog(context, "Please verify your email",
-                "Invalid email", "Okay", () {});
-            final user = FirebaseAuth.instance.currentUser;
-            await user?.sendEmailVerification();
-            if (mounted) {
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil(emailVerifyRouter, (route) => false);
-            }
+          if (!(user?.isEmailVerified ?? false)) {
+            showCustomDialog(
+                context, "Please verify your email", "Invalid email", "Okay",
+                () {
+              Navigator.pop(context);
+            });
           } else {
             showCustomDialog(context, "Logged in successfully", "Success",
                 "Okay", handleLoginSuccess);
           }
         }
-      } on FirebaseException catch (e) {
+      } on InvalidEmailAuthException {
         if (mounted) {
-          setState(() {
-            loginBackgroundCheckStarted = false;
-          });
-          if (e.code == "invalid-email") {
-            showCustomDialog(context, "Invalid email format.Please try again",
-                "Error", "Close", () => {Navigator.pop(context)});
-          } else if (e.code == "invalid-credential") {
-            showCustomDialog(context, "Invalid email or password.", "Error",
-                "Close", () => {Navigator.pop(context)});
-          } else {
-            showCustomDialog(context, e.code, "Error occured", "Close",
-                () => {Navigator.pop(context)});
-          }
+          showCustomDialog(context, "Invalid email format.Please try again",
+              "Error", "Close", () => {Navigator.pop(context)});
         }
-      } catch (e) {
+      } on WrongPasswordAuthException {
         if (mounted) {
-          setState(() {
-            loginBackgroundCheckStarted = false;
-          });
-          showCustomDialog(context, "Something happened.Please try again later",
-              "Error occured", "Close", () => {Navigator.pop(context)});
+          showCustomDialog(context, "Invalid email or password.", "Error",
+              "Close", () => {Navigator.pop(context)});
+        }
+      } on UserNotFoundAuthException {
+        if (mounted) {
+          showCustomDialog(context, "Invalid email or password.", "Error",
+              "Close", () => {Navigator.pop(context)});
+        }
+      } on GenericAuthException {
+        if (mounted) {
+          showCustomDialog(context, "Something happened", "Error occured",
+              "Close", () => {Navigator.pop(context)});
         }
       }
     }

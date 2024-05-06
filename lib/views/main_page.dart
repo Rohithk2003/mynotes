@@ -1,8 +1,8 @@
 import 'dart:developer';
 
 import 'package:MyNotes/constants/routes.dart';
+import 'package:MyNotes/services/auth/auth_service.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:google_fonts/google_fonts.dart';
 // import 'dart:developer' as devtools show log;
 
@@ -25,8 +25,7 @@ class MyWidget extends StatelessWidget {
 enum MenuAction { logout, delete }
 
 class _MainPageViewState extends State<MainPageView> {
-  String user =
-      FirebaseAuth.instance.currentUser?.email.toString().split("@")[0] ?? "";
+  String user = AuthService.firebase().currentUser?.userId ?? "";
 
   Future<void> showLogOutDialog(BuildContext context, String contentText,
       String titleText, Function handleFunction) {
@@ -54,7 +53,7 @@ class _MainPageViewState extends State<MainPageView> {
   }
 
   void logout() async {
-    await FirebaseAuth.instance.signOut();
+    await AuthService.firebase().logout();
     if (mounted) {
       showDialog(
           context: context,
@@ -75,7 +74,7 @@ class _MainPageViewState extends State<MainPageView> {
   }
 
   void deleteAccount() async {
-    await FirebaseAuth.instance.currentUser?.delete();
+    await AuthService.firebase().deleteAccount();
     if (mounted) {
       showDialog(
           context: context,

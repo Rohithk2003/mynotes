@@ -1,6 +1,6 @@
 import 'package:MyNotes/constants/routes.dart';
+import 'package:MyNotes/services/auth/auth_service.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class EmailVerification extends StatefulWidget {
@@ -15,13 +15,11 @@ class _EmailVerificationState extends State<EmailVerification> {
     setState(() {
       clickedVerifyEmail = true;
     });
-    final user = FirebaseAuth.instance.currentUser;
-    await user?.sendEmailVerification();
+    AuthService.firebase().sendEmailVerification();
   }
 
   void goToLogin() async {
-    FirebaseAuth.instance.currentUser;
-    await FirebaseAuth.instance.signOut();
+    AuthService.firebase().logout();
     if (mounted) {
       Navigator.of(context)
           .pushNamedAndRemoveUntil(loginRouter, (route) => false);
