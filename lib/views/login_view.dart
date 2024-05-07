@@ -225,18 +225,6 @@ class _LoginViewState extends State<LoginView> {
                               color: textColor, letterSpacing: .5),
                         ),
                       )),
-                  TextButton(
-                      onPressed: () async {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                            emailVerifyRouter, (route) => false);
-                      },
-                      child: Text(
-                        "Verify email !",
-                        style: GoogleFonts.inter(
-                          textStyle: const TextStyle(
-                              color: textColor, letterSpacing: .5),
-                        ),
-                      ))
                 ],
               ),
             ),

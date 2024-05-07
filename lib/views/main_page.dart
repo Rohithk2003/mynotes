@@ -189,7 +189,7 @@ class _MainPageViewState extends State<MainPageView> {
       backgroundColor: bgColor,
       body: SingleChildScrollView(
         child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: 100),
+          constraints: const BoxConstraints(minHeight: 100),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
