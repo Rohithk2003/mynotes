@@ -228,6 +228,7 @@ class _NotesPageViewState extends State<NotesPageView> {
                     builder: (context, snapshot) {
                       switch (snapshot.connectionState) {
                         case ConnectionState.waiting:
+                        case ConnectionState.active:
                           return const Text(
                             "waiting for all notes...",
                             style: TextStyle(color: textColor),
