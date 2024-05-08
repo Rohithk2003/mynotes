@@ -22,7 +22,7 @@ class _EmailVerificationState extends State<EmailVerification> {
     AuthService.firebase().logout();
     if (mounted) {
       Navigator.of(context)
-          .pushNamedAndRemoveUntil(loginRouter, (route) => false);
+          .pushNamedAndRemoveUntil(loginRoute, (route) => false);
     }
   }
 

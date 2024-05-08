@@ -79,7 +79,7 @@ class _NotesPageViewState extends State<NotesPageView> {
                 TextButton(
                     onPressed: () async {
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                          loginRouter, (route) => false);
+                          loginRoute, (route) => false);
                     },
                     child: const Text("Close"))
               ],
@@ -101,13 +101,17 @@ class _NotesPageViewState extends State<NotesPageView> {
                 TextButton(
                     onPressed: () async {
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                          registerRouter, (route) => false);
+                          registerRoute, (route) => false);
                     },
                     child: const Text("Close"))
               ],
             );
           });
     }
+  }
+
+  void redirectToNoteView() {
+    Navigator.of(context).pushNamed(newNotesRoute);
   }
 
   final items = 10;
@@ -130,6 +134,17 @@ class _NotesPageViewState extends State<NotesPageView> {
           backgroundColor: const Color.fromRGBO(28, 27, 21, 1),
           foregroundColor: textColor,
           actions: [
+            SizedBox(
+              width: 50,
+              child: TextButton(
+                  onPressed: redirectToNoteView,
+                  child: const Text(
+                    "Add",
+                    style: TextStyle(
+                      color: textColor,
+                    ),
+                  )),
+            ),
             PopupMenuButton<MenuAction>(
                 padding: const EdgeInsets.all(0),
                 offset: const Offset(0, 56),
@@ -202,30 +217,56 @@ class _NotesPageViewState extends State<NotesPageView> {
           ],
         ),
         backgroundColor: bgColor,
-        body: FutureBuilder(
-          future: _notesService.getOrCreateUser(email: user),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.done:
-                return StreamBuilder(
-                  stream: _notesService.allNotes,
-                  builder: (context, snapshot) {
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.waiting:
-                        return const Text(
-                          "waiting for all notes...",
-                          style: TextStyle(color: textColor),
-                        );
-                      default:
-                        return const CircularProgressIndicator();
-                    }
+        body: Stack(children: [
+          FutureBuilder(
+            future: _notesService.getOrCreateUser(email: user),
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.done:
+                  return StreamBuilder(
+                    stream: _notesService.allNotes,
+                    builder: (context, snapshot) {
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.waiting:
+                          return const Text(
+                            "waiting for all notes...",
+                            style: TextStyle(color: textColor),
+                          );
+                        default:
+                          return const CircularProgressIndicator();
+                      }
+                    },
+                  );
+                default:
+                  return const CircularProgressIndicator();
+              }
+            },
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: SizedBox(
+              width: 65,
+              height: 65,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  bottom: 16.0,
+                  right: 16.0,
+                ),
+                child: FloatingActionButton(
+                  onPressed: () {
+                    redirectToNoteView();
                   },
-                );
-              default:
-                return const CircularProgressIndicator();
-            }
-          },
-        ));
+                  backgroundColor: textColor, // Change background color
+                  shape: const CircleBorder(),
+                  child: const Icon(
+                    Icons.add,
+                    size: 30,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ]));
   }
 }
 

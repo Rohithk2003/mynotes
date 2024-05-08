@@ -39,10 +39,10 @@ class _LoginViewState extends State<LoginView> {
       final user = AuthService.firebase().currentUser;
       if (user?.isEmailVerified ?? false) {
         Navigator.of(context)
-            .pushNamedAndRemoveUntil(emailVerifyRouter, (route) => false);
+            .pushNamedAndRemoveUntil(emailVerifyRoute, (route) => false);
       }
       Navigator.of(context)
-          .pushNamedAndRemoveUntil(notesRouter, (route) => false);
+          .pushNamedAndRemoveUntil(notesRoute, (route) => false);
     }
   }
 
@@ -56,7 +56,7 @@ class _LoginViewState extends State<LoginView> {
       showCustomDialog(
           context, "Please fill the details", "Invalid email", "Okay", () {
         Navigator.of(context)
-            .pushNamedAndRemoveUntil(emailVerifyRouter, (route) => false);
+            .pushNamedAndRemoveUntil(emailVerifyRoute, (route) => false);
       });
     } else {
       try {
@@ -216,7 +216,7 @@ class _LoginViewState extends State<LoginView> {
                   TextButton(
                       onPressed: () async {
                         Navigator.of(context).pushNamedAndRemoveUntil(
-                            registerRouter, (route) => false);
+                            registerRoute, (route) => false);
                       },
                       child: Text(
                         "Not registered yet ? Register here!",

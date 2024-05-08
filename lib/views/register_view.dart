@@ -41,7 +41,7 @@ class _RegisterViewState extends State<RegisterView> {
                 actions: [
                   TextButton(
                       onPressed: () async {
-                        Navigator.of(context).pushNamed(emailVerifyRouter);
+                        Navigator.of(context).pushNamed(emailVerifyRoute);
                       },
                       child: const Text("Okay"))
                 ],
@@ -196,7 +196,7 @@ class _RegisterViewState extends State<RegisterView> {
                 TextButton(
                     onPressed: () async {
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                          loginRouter, (route) => false);
+                          loginRoute, (route) => false);
                     },
                     child: const Text(
                       "Already registered? Login here!",
