@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:MyNotes/services/crud/crud_exceptions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
@@ -30,14 +31,17 @@ const createNoteTable = '''CREATE TABLE IF NOT EXISTS "note" (
 class NotesService {
   Database? _db;
 
-  NotesService._shareInstance();
   static final NotesService _shared = NotesService._shareInstance();
-
+  NotesService._shareInstance() {
+    _notesStreamController =
+        StreamController<List<DatabaseNote>>.broadcast(onListen: () {
+      _notesStreamController.add(_notes);
+    });
+  }
   factory NotesService() => _shared;
 
   List<DatabaseNote> _notes = [];
-  final _notesStreamController =
-      StreamController<List<DatabaseNote>>.broadcast();
+  late final StreamController<List<DatabaseNote>> _notesStreamController;
 
   Future<void> _ensureDbOpen() async {
     try {
@@ -135,7 +139,6 @@ class NotesService {
     if (dbUser != owner) {
       throw InvalidUserException();
     }
-
     final noteId = await db.insert(
       noteTable,
       {
@@ -143,13 +146,17 @@ class NotesService {
         textColumn: text,
       },
     );
+    log(text);
+
     final note = DatabaseNote.fromRow(
       {
         idColumn: noteId,
         userIdColumn: dbUser.id,
-        text: text,
+        textColumn: text,
       },
     );
+    log("hello");
+
     _notes.add(note);
     _notesStreamController.add(_notes);
     return note;

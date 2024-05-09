@@ -218,30 +218,53 @@ class _NotesPageViewState extends State<NotesPageView> {
         ),
         backgroundColor: bgColor,
         body: Stack(children: [
-          FutureBuilder(
-            future: _notesService.getOrCreateUser(email: user),
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.done:
-                  return StreamBuilder(
-                    stream: _notesService.allNotes,
-                    builder: (context, snapshot) {
-                      switch (snapshot.connectionState) {
-                        case ConnectionState.waiting:
-                        case ConnectionState.active:
-                          return const Text(
-                            "waiting for all notes...",
-                            style: TextStyle(color: textColor),
-                          );
-                        default:
-                          return const CircularProgressIndicator();
-                      }
-                    },
-                  );
-                default:
-                  return const CircularProgressIndicator();
-              }
-            },
+          Column(
+            children: [
+              const SizedBox(
+                height: 90,
+                child: Center(
+                  child: Text("My Notes",
+                      style: TextStyle(fontSize: 50, color: textColor)),
+                ),
+              ),
+              FutureBuilder(
+                future: _notesService.getOrCreateUser(email: user),
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.done:
+                      return StreamBuilder(
+                        stream: _notesService.allNotes,
+                        builder: (context, snapshot) {
+                          switch (snapshot.connectionState) {
+                            case ConnectionState.waiting:
+                            case ConnectionState.active:
+                              if (snapshot.hasData) {
+                                final allNotes =
+                                    snapshot.data as List<DatabaseNote>;
+                                return SizedBox(
+                                  height: 700,
+                                  child: ListView.builder(
+                                    itemCount: allNotes.length,
+                                    itemBuilder: (context, index) {
+                                      final note = allNotes[index];
+                                      return ItemWidget(text: note.text);
+                                    },
+                                  ),
+                                );
+                              } else {
+                                return const CircularProgressIndicator();
+                              }
+                            default:
+                              return const CircularProgressIndicator();
+                          }
+                        },
+                      );
+                    default:
+                      return const CircularProgressIndicator();
+                  }
+                },
+              ),
+            ],
           ),
           Align(
             alignment: Alignment.bottomRight,
@@ -284,7 +307,13 @@ class ItemWidget extends StatelessWidget {
     return Card(
       child: SizedBox(
         height: 100,
-        child: Center(child: Text(text)),
+        child: Center(
+            child: Text(
+          text,
+          maxLines: 1,
+          softWrap: true,
+          overflow: TextOverflow.ellipsis,
+        )),
       ),
     );
   }

@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:MyNotes/constants/routes.dart';
 import 'package:MyNotes/services/auth/auth_service.dart';
 import 'package:MyNotes/services/crud/notes_service.dart';
+import 'package:MyNotes/utilities/showCustomError.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -25,25 +28,46 @@ class _NewNoteViewState extends State<NewNoteView> {
     final currentUser = AuthService.firebase().currentUser!;
     final email = currentUser.userEmail;
     final owner = await _notesService.getUser(email: email);
-    return await _notesService.createNote(owner: owner, text: text);
-  }
-
-  void _saveNoteIfTextNotEmpty() async {
-    String text = _textController.text;
-    final existingNote = _note;
-
-    if (text != "" && existingNote != null) {
-      _notesService.updateNote(id: existingNote.id, text: text);
+    _note = await _notesService.createNote(owner: owner, text: text);
+    if (_note != null) {
+      showCustomDialog(
+          context,
+          "Your note has been saved",
+          "Note Saved",
+          'Close',
+          () => {
+                Navigator.pop(context),
+              });
     }
+    log(_note.toString());
+    return _note!;
   }
 
-  void _deleteNoteIfTextIsEmpty() {
-    String text = _textController.text;
-    final existingNote = _note;
-    if (text == "" && existingNote != null) {
-      _notesService.deleteNote(id: existingNote.id);
-    }
-  }
+  // void _saveNoteIfTextNotEmpty() async {
+  //   String text = _textController.text;
+  //   final existingNote = _note;
+  //   log("test");
+
+  //   if (text != "" && existingNote != null) {
+  //     showCustomDialog(
+  //         context,
+  //         "Your note has been saved",
+  //         "Note Saved",
+  //         'Close',
+  //         () => {
+  //               Navigator.pop(context),
+  //             });
+  //     _notesService.updateNote(id: existingNote.id, text: text);
+  //   }
+  // }
+
+  // void _deleteNoteIfTextIsEmpty() {
+  //   String text = _textController.text;
+  //   final existingNote = _note;
+  //   if (text == "" && existingNote != null) {
+  //     _notesService.deleteNote(id: existingNote.id);
+  //   }
+  // }
 
   @override
   void initState() {
@@ -54,8 +78,8 @@ class _NewNoteViewState extends State<NewNoteView> {
 
   @override
   void dispose() {
-    _deleteNoteIfTextIsEmpty();
-    _saveNoteIfTextNotEmpty();
+    // _deleteNoteIfTextIsEmpty();
+    // _saveNoteIfTextNotEmpty();
     _textController.dispose();
     _notesService.close();
     super.dispose();
@@ -70,68 +94,57 @@ class _NewNoteViewState extends State<NewNoteView> {
           foregroundColor: textColor,
         ),
         backgroundColor: bgColor,
-        body: FutureBuilder(
-          future: createNewNote(),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.done:
-                _note = snapshot.data;
-                return Center(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 300,
-                          height: 100,
-                          child: TextField(
-                            controller: _textController,
-                            style: const TextStyle(
-                                backgroundColor: bgColor, color: textColor),
-                            keyboardType: TextInputType.multiline,
-                            decoration: InputDecoration(
-                                hintText: "Start typing your note here...",
-                                hintStyle: GoogleFonts.inter(
-                                  textStyle: const TextStyle(
-                                    backgroundColor: bgColor,
-                                    color: textColor,
-                                    letterSpacing: .5,
-                                  ),
-                                ),
-                                fillColor: textColor,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: const BorderSide(
-                                    color: textColor,
-                                    width: 2.0,
-                                  ),
-                                )),
+        body: Center(
+          child: Align(
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 300,
+                  height: 100,
+                  child: TextField(
+                    controller: _textController,
+                    style: const TextStyle(
+                        backgroundColor: bgColor, color: textColor),
+                    keyboardType: TextInputType.multiline,
+                    decoration: InputDecoration(
+                        hintText: "Start typing your note here...",
+                        hintStyle: GoogleFonts.inter(
+                          textStyle: const TextStyle(
+                            backgroundColor: bgColor,
+                            color: textColor,
+                            letterSpacing: .5,
                           ),
                         ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            _saveNoteIfTextNotEmpty();
-                          },
-                          style: TextButton.styleFrom(
-                            backgroundColor: secondaryColor,
+                        fillColor: textColor,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(
+                            color: textColor,
+                            width: 2.0,
                           ),
-                          child: const Text("Save Note",
-                              style: TextStyle(
-                                color: textColor,
-                              )),
-                        )
-                      ],
-                    ),
+                        )),
                   ),
-                );
-              default:
-                return const CircularProgressIndicator();
-            }
-          },
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                TextButton(
+                  onPressed: () {
+                    createNewNote();
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: secondaryColor,
+                  ),
+                  child: const Text("Save Note",
+                      style: TextStyle(
+                        color: textColor,
+                      )),
+                )
+              ],
+            ),
+          ),
         ));
   }
 }
