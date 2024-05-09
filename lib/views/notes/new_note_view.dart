@@ -91,7 +91,7 @@ class _NewNoteViewState extends State<NewNoteView> {
                                 backgroundColor: bgColor, color: textColor),
                             keyboardType: TextInputType.multiline,
                             decoration: InputDecoration(
-                                hintText: "Enter your text",
+                                hintText: "Start typing your note here...",
                                 hintStyle: GoogleFonts.inter(
                                   textStyle: const TextStyle(
                                     backgroundColor: bgColor,
