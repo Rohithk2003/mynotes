@@ -28,8 +28,9 @@ class _NewNoteViewState extends State<NewNoteView> {
     final currentUser = AuthService.firebase().currentUser!;
     final email = currentUser.userEmail;
     final owner = await _notesService.getUser(email: email);
+    log(text);
     _note = await _notesService.createNote(owner: owner, text: text);
-    if (_note != null) {
+    if (mounted) {
       showCustomDialog(
           context,
           "Your note has been saved",

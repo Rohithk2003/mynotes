@@ -124,7 +124,7 @@ class _LoginViewState extends State<LoginView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'My Notes',
+              'Camera',
               style: GoogleFonts.inter(
                 textStyle: const TextStyle(
                     color: textColor,

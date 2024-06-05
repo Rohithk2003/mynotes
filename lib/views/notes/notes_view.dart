@@ -4,6 +4,7 @@ import 'package:MyNotes/constants/routes.dart';
 import 'package:MyNotes/services/auth/auth_service.dart';
 import 'package:MyNotes/services/crud/notes_service.dart';
 import 'package:flutter/material.dart';
+
 // import 'package:google_fonts/google_fonts.dart';
 // import 'dart:developer' as devtools show log;
 
@@ -14,16 +15,32 @@ class NotesPageView extends StatefulWidget {
   State<NotesPageView> createState() => _NotesPageViewState();
 }
 
-class MyWidget extends StatelessWidget {
-  const MyWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
 enum MenuAction { logout, delete }
+
+Future<void> showCustomDialogs(BuildContext context, String contentText,
+    String titleText, Function handleFunction) {
+  return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(titleText),
+          content: Text(contentText),
+          actions: [
+            TextButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                },
+                child: const Text("Cancel")),
+            TextButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  handleFunction();
+                },
+                child: Text(titleText)),
+          ],
+        );
+      });
+}
 
 class _NotesPageViewState extends State<NotesPageView> {
   late final NotesService _notesService;
@@ -40,31 +57,6 @@ class _NotesPageViewState extends State<NotesPageView> {
   void dispose() {
     _notesService.close();
     super.dispose();
-  }
-
-  Future<void> showLogOutDialog(BuildContext context, String contentText,
-      String titleText, Function handleFunction) {
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(titleText),
-            content: Text(contentText),
-            actions: [
-              TextButton(
-                  onPressed: () async {
-                    Navigator.pop(context);
-                  },
-                  child: const Text("Cancel")),
-              TextButton(
-                  onPressed: () async {
-                    Navigator.pop(context);
-                    handleFunction();
-                  },
-                  child: Text(titleText)),
-            ],
-          );
-        });
   }
 
   void logout() async {
@@ -152,11 +144,11 @@ class _NotesPageViewState extends State<NotesPageView> {
                   log(value.toString());
                   switch (value) {
                     case MenuAction.logout:
-                      await showLogOutDialog(
+                      await showCustomDialogs(
                           context, "Are you sure ?", "Sign Out", logout);
                       break;
                     case MenuAction.delete:
-                      await showLogOutDialog(
+                      await showCustomDialogs(
                           context,
                           "Are you sure that yo u want to delete your account? This action is irreversible.",
                           "Delete Account",
@@ -222,9 +214,10 @@ class _NotesPageViewState extends State<NotesPageView> {
             children: [
               const SizedBox(
                 height: 90,
+                width: double.infinity,
                 child: Center(
-                  child: Text("My Notes",
-                      style: TextStyle(fontSize: 50, color: textColor)),
+                  child: Text("Upload Image",
+                      style: TextStyle(fontSize: 40, color: textColor)),
                 ),
               ),
               FutureBuilder(
@@ -247,7 +240,11 @@ class _NotesPageViewState extends State<NotesPageView> {
                                     itemCount: allNotes.length,
                                     itemBuilder: (context, index) {
                                       final note = allNotes[index];
-                                      return ItemWidget(text: note.text);
+                                      return ItemWidget(
+                                        text: note.text,
+                                        currentNote: note,
+                                        notesService: _notesService,
+                                      );
                                     },
                                   ),
                                 );
@@ -298,23 +295,68 @@ class ItemWidget extends StatelessWidget {
   const ItemWidget({
     super.key,
     required this.text,
+    required this.currentNote,
+    required this.notesService,
   });
-
   final String text;
+  final DatabaseNote currentNote;
+  final NotesService notesService;
+  // TextEditingController newNoteText;
+  // final bool editingOptionAvailable = false;
+
+  void deleteNote() async {
+    await notesService.deleteNote(id: currentNote.id);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: SizedBox(
-        height: 100,
-        child: Center(
-            child: Text(
-          text,
-          maxLines: 1,
-          softWrap: true,
-          overflow: TextOverflow.ellipsis,
-        )),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 30,
+            child: TextButton(
+              onPressed: () async {
+                await showCustomDialogs(context, "Are you sure ?",
+                    "Delete Note", () => {deleteNote()});
+              },
+              child: const Icon(
+                Icons.delete,
+                color: bgColor,
+                size: 25,
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 30,
+            child: TextButton(
+              onPressed: () async {},
+              child: const Icon(
+                Icons.edit,
+                color: bgColor,
+                size: 25,
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 40,
+            width: 30,
+            child: VerticalDivider(width: 5, thickness: 1, color: Colors.black),
+          ),
+          SizedBox(
+            height: 60,
+            child: Center(
+                child: Text(
+              text,
+              maxLines: 1,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
+            )),
+          ),
+        ],
       ),
     );
   }
 }
+
+// A screen that allows users to take a picture using a given camera.
